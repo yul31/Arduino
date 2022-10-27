@@ -1,0 +1,57 @@
+#define led1 3
+#define led2 4
+#define led3 5
+#define led4 6
+
+#define sw1 7
+#define sw2 8
+#define sw3 9
+#define sw4 10
+
+void setup() {
+  int i;
+  for(i=3; i<=6; i++)
+    pinMode(i,OUTPUT);
+
+  for(i=7; i<=10; i++)
+    pinMode(i,INPUT_PULLUP); //평상시(5v),push하면(0v)
+}
+
+void clr_led(){
+  for(int i=3; i<=6; i++)
+    digitalWrite(i,LOW);
+}
+void on_led(){
+  for(int i=3; i<=6; i++)
+    digitalWrite(i,HIGH);
+}
+
+void loop() {
+  //스위치 4개에 led4개 각각 연결해서 누르면 불켜고, 손떼면 불안켬
+//  int i;
+//  int x;
+//  for(i=7; i<=10; i++){
+//    x=digitalRead(i);
+//    if(x==0){//누르면 0v되어서 불켜고
+//      digitalWrite(i-4,HIGH);
+//    }
+//    else{//누르지 않으면 5v되어서 불안켬
+//      digitalWrite(i-4,LOW);
+//    }
+//  }
+
+  //sw1 스위치 누르면 led 4개 10번 깜빡임
+  int x;
+  int count;
+  x=digitalRead(sw1);
+  if(x==0){
+    for(count=0; count<10; count++){
+      on_led();
+      delay(200);
+      clr_led();
+      delay(200);
+      if(digitalRead(sw2)==0)
+        count=10;
+    }
+  }
+}

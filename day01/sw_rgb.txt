@@ -1,0 +1,90 @@
+#define sw1 7
+#define sw2 8
+#define sw3 9
+#define sw4 10
+
+#define red 3 //pwm ~3 (0-255까지 출력)
+#define green 5 //pwm ~5
+#define blue 6 //pwm ~6
+
+#define poten A5 //ADC(0~1023 10bit로 표현): 디지털로 변환
+
+void rgb_color(int r, int g, int b){
+  analogWrite(red,r);
+  analogWrite(green,g);
+  analogWrite(blue,b);
+}
+
+void setup() {
+  Serial.begin(9600); //9600bps
+  pinMode(red,OUTPUT);
+  pinMode(green,OUTPUT);
+  pinMode(blue,OUTPUT);
+  
+  int i;
+  for(i=7; i<=10; i++)
+    pinMode(i,INPUT_PULLUP); //평상시(5v),push하면(0v)
+
+  pinMode(poten,INPUT);
+  
+  rgb_color(0,0,0);
+}
+
+void loop() {
+//  int i;
+//  for(i=0; i<=255; i++){
+//    analogWrite(blue,i);
+//    delay(100);
+//  }
+
+  //점점 밝아져서 하얀색 됨
+//  int i;
+//  for(i=0; i<255; i++){
+//    rgb_color(i,i,i);
+//    delay(100);
+//  }
+
+  //sw1~4 누르면 각각 지정한 색이 나오게 하기
+  //sw1 push -> magenta color (255,000,255)
+  //sw2 push -> lime (000,255,000)
+  //sw3 push -> navy (000,000,128)
+  //sw4 push -> aqua (000,255,255)
+  
+//  int i;
+//  if(digitalRead(sw1)==0)
+//    rgb_color(255,000,255); //magenta
+//  if(digitalRead(sw2)==0)
+//    rgb_color(000,255,000); //lime
+//  if(digitalRead(sw3)==0)
+//    rgb_color(000,000,128); //navy
+//  if(digitalRead(sw4)==0)
+//    rgb_color(000,255,255); //aqua
+
+  //오디오 볼륨 조절: 툴-시리얼 모니터에 출력
+  int x,color;
+  x=analogRead(poten); //0~1023
+  color=map(x,0,1023,0,255); //x값을 0~1023에서 0~255로 바꾸기
+  Serial.print("x=");
+  Serial.println(x);
+  Serial.print(", color=");
+  Serial.println(color); 
+  rgb_color(color,color,color); //color 값 출력, rgb led에 색 나옴
+  delay(300);
+
+  //x값 범위 설정해서 원하는 led색 출력하기
+  //x<=100 yellow (255,255,0)
+  //x<=500 skyblue (135,206,235)
+  //x<=800 orange (255,165,0)
+  //x<=900 green (0,255,0)
+  //x>900 white (255,255,255)
+  if(x<=100)
+    rgb_color(255,255,0);
+  else if(x<=500)
+    rgb_color(135,206,235);
+  else if(x<=800)
+   rgb_color(255,165,0);
+  else if(x<=900)
+    rgb_color(0,255,0);
+  else
+    rgb_color(255,255,255);
+}

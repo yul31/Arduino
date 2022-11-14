@@ -1,0 +1,91 @@
+// 1sec: 340m = x : 1m
+// 1sec: 34000cm = x : 1cm
+// x=1/34000[sec]
+// x=29[msec] 1cm에 29[msec] 시간이 걸림
+
+#define buzzer 7
+#define trig 2
+#define echo 3
+
+void sound(int t){
+  digitalWrite(buzzer,HIGH);
+  delay(t);
+  digitalWrite(buzzer,LOW);
+}
+
+void setup() {
+  pinMode(buzzer,OUTPUT);
+  
+  Serial.begin(9600);
+  pinMode(trig,OUTPUT);
+  pinMode(echo,INPUT);
+}
+
+void loop() {
+  //microwave로 시간,거리 측정
+  float t,distance; //시간,거리
+  digitalWrite(trig,LOW);
+  delayMicroseconds(2);
+  digitalWrite(trig,HIGH);
+  delayMicroseconds(2);
+  digitalWrite(trig,LOW);
+  delayMicroseconds(2);
+  digitalWrite(trig,HIGH);
+  delayMicroseconds(2);
+  digitalWrite(trig,LOW);
+  t=pulseIn(echo,HIGH); //t:왕복, pulseIn: 시간 계산하는 함수
+  t=t/2; //편도로 설정
+  distance=t/29;
+  Serial.print("t=");
+  Serial.print(t);
+  Serial.print(", distance=");
+  Serial.print(distance);
+  Serial.println("cm");
+  delay(300);
+
+  //거리에 따른 buzzer 출력
+  //3cm 이하 : 삐- 출력
+  //3cm<거리<=5cm : 50msec 단속
+  //5cm<거리<=10cm : 100msec 단속
+  //10cm<거리<=20cm : 500msec 단속
+  //거리>20cm : 소리x
+  
+  if(distance<=3){
+    digitalWrite(buzzer,HIGH);
+  }
+  else if(distance<=5){
+    digitalWrite(buzzer,HIGH);
+    delay(500);
+    digitalWrite(buzzer,LOW);
+    delay(500);
+  }
+  else if(distance<=10){
+    digitalWrite(buzzer,HIGH);
+    delay(300);
+    digitalWrite(buzzer,LOW);
+    delay(300);
+  }
+  else if(distance<=20){
+    digitalWrite(buzzer,HIGH);
+    delay(100);
+    digitalWrite(buzzer,LOW);
+    delay(100);
+  }
+  else
+    digitalWrite(buzzer,LOW);
+    
+
+  //위와 같은 문제-sound 함수 이용하기
+/*
+  if(distance<=3)
+    digitalWrite(buzzer,HIGH);
+  else if(distance<=5)
+    sound(50);
+  else if(distance<=10)
+    sound(100);
+  else if(distance<=20)
+    sound(500);
+  else
+    digitalWrite(buzzer,LOW);
+    */
+}

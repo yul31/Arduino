@@ -1,0 +1,101 @@
+#include <Servo.h>
+Servo myservo;
+
+#define cds A0
+#define blue 9
+#define green 10
+#define red 11
+#define buzzer 2
+void rgb_color(int r, int g, int b){
+  analogWrite(red,r);
+  analogWrite(green,g);
+  analogWrite(blue,b);
+}
+
+void setup() {
+  myservo.attach(8);
+  delay(100);
+
+  pinMode(buzzer,OUTPUT);
+  pinMode(cds,INPUT);
+  Serial.begin(9600);
+  for(int i=9; i<=11; i++)
+    pinMode(i,OUTPUT);
+  rgb_color(0,0,0);
+
+  int x=myservo.read();
+  Serial.print("gacdo=");
+  Serial.println(x);
+  delay(1000);
+  myservo.write(0);
+}
+
+void loop() {
+  
+  //시리얼 모니터에 빛에 따른 cds값 출력
+  int value;
+  value=analogRead(cds);
+  Serial.print("cds value=");
+  Serial.println(value);
+  //delay(500);
+
+  //1. cds 값에 따른 rgb 빛,buzzer 소리 출력
+  //2. 서보각도 값에 따른 rgb 빛,buzzer 소리 출력
+  //0~30 red
+  //31~100 green
+  //101~200 blue
+  //201~500 yellow
+  //501~800 pink
+  //801~1000 magenta
+  //1001~1023 navy
+
+  if(value<=50){
+    rgb_color(255,0,0); //red
+    myservo.write(180);
+    digitalWrite(buzzer,HIGH);
+    delay(100);
+    digitalWrite(buzzer,LOW);
+    delay(100);
+  }
+  else if(value<=100){
+    rgb_color(0,255,0); //green
+    myservo.write(120);
+    digitalWrite(buzzer,HIGH);
+    delay(300);
+    digitalWrite(buzzer,LOW);
+    delay(300);
+  }
+  else if(value<=200){
+    rgb_color(0,0,255); //blue
+    myservo.write(90);
+  }
+  else if(value<=500){
+    rgb_color(255,255,0); //yellow
+    myservo.write(90);
+  }
+  else if(value<=800){
+    rgb_color(255,192,203); //pink
+    myservo.write(90);
+  }
+  else if(value<=1000){
+    rgb_color(255,0,255); //magenta
+    myservo.write(45);
+  }
+  else{
+    rgb_color(0,0,128); //navy
+    myservo.write(0);
+  }
+    
+/*
+  //서보각도 0~180, 180~0으로 작동
+  int i;
+  for(i=0; i<=180; i++){
+    myservo.write(i);
+    delay(100);
+  }
+  for(i=180; i>=0; i--){
+    myservo.write(i);
+    delay(100);
+  }
+  */
+}

@@ -1,0 +1,94 @@
+#include <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd(0x27,16,2);
+
+#define trig 7
+#define echo 8
+#define cds A0
+float t,distance;
+int value; //조도센서값
+
+void setup() {  
+  lcd.init();
+  lcd.backlight(); //좀 더 밝게
+  Serial.begin(9600);
+  pinMode(trig,OUTPUT);
+  pinMode(echo,INPUT);
+  pinMode(cds,INPUT);
+  
+  /*
+  lcd.print("Hello?");
+  lcd.setCursor(3,1); //칸(0~15 16칸),줄(0~1 2줄)
+  lcd.print("hi?");
+  delay(3000);
+  lcd.clear();
+  delay(3000);
+  lcd.cursor(); //커서: 기본값이 안보이게 설정
+  delay(3000);
+  lcd.noCursor(); //커서 안보이게
+  lcd.print("Big Data!!!!!");
+  delay(3000);
+  lcd.blink(); //blink: 기본값이 안보이게 설정
+  delay(3000);
+  lcd.noBlink();
+  lcd.noDisplay(); //화면 안보이게
+  delay(3000);
+  lcd.display();
+  delay(7000);
+  lcd.clear();
+  */
+}
+
+void dsp(){ //lcd에서 distance, cds value 위치 고정해서 출력하는 함수 생성
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("distance:");
+  lcd.setCursor(10,0);
+  lcd.print(distance);
+  lcd.print("cm");
+
+  lcd.setCursor(0,1);
+  lcd.print("cds value:");
+  lcd.setCursor(10,1);
+  lcd.print(value);
+}
+
+void loop() {
+  //lcd에 화면띄우기
+  /*
+  lcd.print("Hello? Big Data!!");
+  lcd.setCursor(3,1);
+  lcd.print("apple");
+  lcd.print(", kiwi");
+  delay(5000);
+  lcd.scrollDisplayLeft();
+  delay(3000);
+  lcd.scrollDisplayRight();
+  while(1){
+    
+  }
+  */
+  //lcd에 시간,거리 값 출력 
+  digitalWrite(trig,LOW); //LOW,HIGH 한번만 반복해도 됨
+  delayMicroseconds(2);
+  digitalWrite(trig,HIGH);
+  delayMicroseconds(2);
+  digitalWrite(trig,LOW);
+  delayMicroseconds(2);
+  digitalWrite(trig,HIGH);
+  delayMicroseconds(2);
+  digitalWrite(trig,LOW);
+  t=pulseIn(echo,HIGH); //왕복 시간
+  t=t/2; //편도
+  distance=t/29; //거리(cm)
+  Serial.print("t=");
+  Serial.print(t);
+  Serial.print(", distance=");
+  Serial.print(distance);
+  Serial.println("cm");
+  
+  value=analogRead(cds); //0~1023
+  Serial.print("cds value=");
+  Serial.println(value);
+  dsp(); //dsp 함수 실행
+  delay(300);
+}
